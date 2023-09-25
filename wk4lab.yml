@@ -1,0 +1,54 @@
+---
+- name: Week 4 Lab
+  hosts: cislinuxserver
+  gather_facts: true
+  
+  tasks:
+    - name: install_program
+      ansible.builtin.dnf:
+        name:
+          - httpd
+          - mariadb-server
+          - git
+          - firefox
+        state: latest
+
+    - name: file_transfer
+      ansible.builtin.copy:
+        src: /home/jstonge0657/cs320wk4lab/Hot-TaMaLes/
+        dest: /var/www/html/
+        owner: apache
+        group: apache
+        mode: '0644'
+
+    - name: power_cycle
+      ansible.builtin.reboot:
+
+    - name: restart_httpd
+      ansible.builtin.service:
+        name: httpd
+        status: restarted
+
+    - name: apt_transport_install (chrome)
+      ansible.builtin.apt:
+        state: latest
+        update_cahce: true
+    - name: apt_signing_key (chrome)
+      ansible.builtin.apt_key:
+        url: "https://dl.google.come/linux/linux_signing_key.pub"
+        state: present
+    - name: add_repository (chrome)
+      ansible.builtin.apt_repository:
+        repo: deb http://dl.google.com/linux/chrome/deb/ stable main
+        state: present
+        filename: google-chrome
+    - name: install_chrome
+      ansible.builtin.apt:
+        name: "google-chrome-stable"
+        state: latest
+        update_cache: true
+
+    - name: remove_Chrome
+      ansible.builtin.package:
+        name: "google-chrome-stable"
+        state: absent
